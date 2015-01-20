@@ -3,14 +3,18 @@
 
 #include "params.h"
 
+/* --- Distribution Structure --- */
+
 typedef struct {
-  double std_dev;
-  int max; // Size of table. Set to 0 to ignore table and use rejection sampling
+  double std_dev;                                       // Standard deviation
+  int max;                                              // Size of table. Set to 0 to ignore table and use rejection sampling
   int offset;
-  const float* table; // CDF of Gaussian of standard deviation std_dev centered around offset
+  const float* table;                                   // CDF of Gaussian of standard deviation std_dev centered around offset
 } Distrib;
 
-int Sample(const Distrib& Chi); /* sample integer with gaussian distribution */ 
+int Sample(const Distrib& Chi);                         // sample integer with gaussian distribution
+
+/* ----- Distributional Tables ----- */
 
 // Distribution of std dev 1.2
 const float Chi1_Table[23] = {
@@ -23,41 +27,42 @@ const float Chi1_Table[23] = {
 0.999999976560546, 0.999999999695033, 0.999999999997613,
 0.999999999999989, 1.00000000000000};
 
-const Distrib Chi1 = {
-  1.4,
-  23,
-  11,
-  Chi1_Table
+const float Binary_Table[3] = {
+ .25,
+ .75,
+  1.0 
 };
 
 const float NoTable[1] = {1};
 
-const Distrib Chi2 = {
-  (double) (1 << 17),
-  0,
-  0,
-  NoTable
 
- };
+/* ----- Distributions ----- */
+
+const Distrib Chi1 = {
+  1.4,                                    // std_dev
+  23,                                     // max
+  11,                                     // offset
+  Chi1_Table                              // table
+};
+
+const Distrib Chi2 = {
+  (double) (1 << 17),                     // std_dev
+  0,                                      // max
+  0,                                      // offset
+  NoTable                                 // table
+};
 
 const Distrib Chi3 = {
-  (double) 6,
-  0,
-  0,
-  NoTable
-
- };
-
-const float Binary_Table[3] = {
- .25,
- .75,
-1.0 };
-
+  (double) 6,                             // std_dev
+  0,                                      // max
+  0,                                      // offset
+  NoTable                                 // table
+};
 
 const Distrib Chi_Binary = {
-  0,
-  3,
-  1,
+  0,                                      // std_dev
+  3,                                      // max
+  1,                                      // table
   Binary_Table
 };
 

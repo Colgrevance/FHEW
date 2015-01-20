@@ -30,13 +30,13 @@ const int g_bits_32[3] = {21, 21, 22};
 
 const int KS_base = 25;
 const int KS_exp = 7;
-const ZmodQ KS_table[7] = {1,
-			   25,
-			   25*25,
-			   25*25*25,
-			   25*25*25*25,
-			   25*25*25*25*25,
-			   25*25*25*25*25*25};
+const ZmodQ KS_table[7] = {	1,
+						   	25,
+						   	25*25,
+			   				25*25*25,
+			   				25*25*25*25,
+			   				25*25*25*25*25,
+			   				25*25*25*25*25*25};
 
 const int BS_base = 23;
 const int BS_exp = 2;
