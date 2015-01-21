@@ -1,0 +1,43 @@
+Benchmarks:
+
+
+Before OpenMP
+
+The average for InitializeACC is 631094
+The average for AddToACC is 2945691930
+The average for KeySwitch is 9080245
+The average for ModSwitch is 28663
+
+The average for the first ACC loop is 698451470
+The average for the second ACC loop is 48263492
+The average for the third ACC loop is 1548548594
+The average for the fourth ACC loop is 650201212
+
+
+Using omp parallel for num_threads(8) (only on AddToACC)
+
+The average for InitializeACC is 687318
+The average for AddToACC is 6051151960
+The average for KeySwitch is 11970783
+The average for ModSwitch is 29334
+
+The average for the first ACC loop is 1668751586
+The average for the second ACC loop is 22917619
+The average for the third ACC loop is 4200841170
+The average for the fourth ACC loop is 156844225
+
+NOTE: parallel/for runs horrible without a schedule. The output was incorrect many times.
+
+
+Using omp parallel for schedule(dynamic, 1) (only on AddToACC)
+
+For InitializeACC:      552563
+For AddToACC (overall): 38158324789, divided into: 
+                        35802986904 for the first loop
+                        88016194 for the second loop
+                        1482674437 for the third loop
+                        783590077 for the fourth loop
+For KeySwitch:          10132853
+For ModSwitch:          31642
+The number of AddToACC calls is 966
+

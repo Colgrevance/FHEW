@@ -224,7 +224,7 @@ namespace FHEW {
 
 
     t1 = profiler::rdtsc();
-    //#pragma omp parallel for num_threads(8) // Apparently this is going to make the thing faster...
+    #pragma omp parallel for  // Apparently this is going to make the thing faster...
     for (int i = 0; i < K2; ++i) {
       for (int j = 0; j < 2; ++j) {
         FFTbackward(ct[i][j], ACC[i][j]);
