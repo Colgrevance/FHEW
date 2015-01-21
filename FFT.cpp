@@ -4,7 +4,7 @@
     
 */
 
-// #include <iostream>                                     // Uncomment this line for debugging purposes
+ #include <iostream>                                     // Uncomment this line for debugging purposes
 #include "time_profiler.h"
 
 #include <complex.h>
@@ -61,6 +61,9 @@ void FFTforward(Ring_FFT res, const Ring_ModQ val) {
 }
 
 void FFTbackward(Ring_ModQ res, const Ring_FFT val){
+  
+  //for ( int i = 0; i<N; ++i) std::cout << res[i];      std::cout << "\n";    // Uncomment this line for debugging purposes
+
   for (int k = 0; k < N2; ++k) {
     out[2*k+1] = (double complex) val[k]/N;
     out[2*k]   = (double complex) 0;
@@ -71,7 +74,7 @@ void FFTbackward(Ring_ModQ res, const Ring_FFT val){
     res[k] = (long int) round(in[k]);
   }
 
-  //for ( int i = 0; i<N; ++i) std::cout << res[i];     // Uncomment this line for debugging purposes
+  //for ( int i = 0; i<N; ++i) std::cout << res[i];       std::cout << "\n";     // Uncomment this line for debugging purposes
 
   /*
     Uncomment the following lines to free the pointers

@@ -60,11 +60,11 @@ int main(int argc, char *argv[]) {
     cerr << endl;
 
     if (1 - v1*v2 != v12) { 
-      cerr << "ERROR at iteration " << i+1 << "\n"; 
-    exit(1);
+      cerr << "\033[1;31mERROR at iteration \033[0m" << i+1 << "\n"; 
+    //exit(1);
     }
 
-    cout << "The profile for the " << i+1 << "th iteration of HomNAND is: \n";
+    cout << "The profile for the " << i+1 << "th iteration of HomNAND is: \n\n";
     cout << "For InitializeACC:      " << initP << "\n";
     cout << "For AddToACC (overall): " << ACCP << ", divided into: \n";
     cout << "                        " << inACC1P << " for the first loop\n";
@@ -73,7 +73,7 @@ int main(int argc, char *argv[]) {
     cout << "                        " << inACC4P << " for the fourth loop\n";
     cout << "For KeySwitch:          " << KeySwitchP << "\n";
     cout << "For ModSwitch:          " << ModSwitchP << "\n";
-    cout << "The number of ACC is " << numACC << "\n"; 
+    cout << "The number of AddToACC calls is " << numACC << "\n\n"; 
     cout << endl;
 
 
@@ -90,7 +90,6 @@ int main(int argc, char *argv[]) {
 
   }
 
-  cerr << "\nPassed all tests!\n\n";
 
   cout << "The average for InitializeACC is " << initAv / count << "\n";
   cout << "The average for AddToACC is " <<  ACCAv / count << "\n";

@@ -207,16 +207,24 @@ namespace FHEW {
 
   }
 
-void AddToACCProf(ct_FFT ACC, ct_FFT C, long long * inACC1, long long * inACC2, long long * inACC3, long long * inACC4) {
+  /*
+    \\\\\\\\\\\\\\\\\\\\\\\\ ---- AddToACCProf ---- ///////////////////////
+    
+    The following function is a variant of AddToACC modified just to measure the running time of the four loops inside AddToACC.
+  */
+
+  void AddToACCProf(ct_FFT ACC, ct_FFT C, long long * inACC1, long long * inACC2, long long * inACC3, long long * inACC4) {
     
     ct_ModQ ct;
     dct_ModQ dct;
     dct_FFT dctFFT;
 
-    long long t1, t2;
+    long long t1, t2;                                   // rdtsc-time variables
+    //omp_set_num_threads(4);
+
 
     t1 = profiler::rdtsc();
-    // Decompose_ct(dctFFT, ACC);
+    //#pragma omp parallel for num_threads(8) // Apparently this is going to make the thing faster...
     for (int i = 0; i < K2; ++i) {
       for (int j = 0; j < 2; ++j) {
         FFTbackward(ct[i][j], ACC[i][j]);
@@ -225,9 +233,11 @@ void AddToACCProf(ct_FFT ACC, ct_FFT C, long long * inACC1, long long * inACC2, 
     t2 = profiler::rdtsc();
     *inACC1 = t2 - t1;
 
+
     t1 = profiler::rdtsc();
+    //#pragma omp parallel for num_threads(8)
     for (int i = 0; i < K2; ++i) {
-      for (int j = 0; j < 2; ++j){
+      for (int j = 0; j < 2; ++j) {
         for (int k = 0; k < N; ++k) {
           ZmodQ t = ct[i][j][k] * v_inverse;
           for (int l = 0; l < K; ++l) {
@@ -244,6 +254,7 @@ void AddToACCProf(ct_FFT ACC, ct_FFT C, long long * inACC1, long long * inACC2, 
     *inACC2 = t2 - t1;
 
     t1 = profiler::rdtsc();
+    //#pragma omp parallel for num_threads(8)
     for (int i = 0; i < K2; ++i) {
       for (int j = 0; j < K2; ++j){
         FFTforward(dctFFT[i][j], dct[i][j]);
@@ -254,6 +265,7 @@ void AddToACCProf(ct_FFT ACC, ct_FFT C, long long * inACC1, long long * inACC2, 
 
     t1 = profiler::rdtsc();
     // Mult_dct_ct(ACC, dct, C);
+    //#pragma omp parallel for num_threads(8)
     for (int i = 0; i < K2; ++i) {
       for (int j = 0; j < 2; ++j) {
         for (int k = 0; k < N2; ++k) {
@@ -331,6 +343,11 @@ void AddToACCProf(ct_FFT ACC, ct_FFT C, long long * inACC1, long long * inACC2, 
   }
   
 
+  /*
+    \\\\\\\\\\\\\\\\\\\\\\\\\\ ---- HomNAND ---- /////////////////////////
+    
+    The following function computes the NAND gate of two bit homomorphically, that is, using the (LWE) ciphertexts corresponding to two plaintexts, it computes the ciphertext corresponding to the NAND of these plaintexts.
+  */
 
 
   void HomNAND(LWE::CipherText* res, const EvalKey& EK, const LWE::CipherText& ct1, const LWE::CipherText& ct2) {
@@ -366,31 +383,43 @@ void AddToACCProf(ct_FFT ACC, ct_FFT C, long long * inACC1, long long * inACC2, 
     LWE::ModSwitch(res, eQ);
   }
 
+
+  /*
+    \\\\\\\\\\\\\\\\\\\\\\\\ ---- HomNANDProf ---- ///////////////////////
+    
+    The following function is a variant of HomNAND modified just to measure the running time of the different functions that HomNAND is using.
+  */
+
   void HomNANDProf(LWE::CipherText* res, const EvalKey& EK, const LWE::CipherText& ct1, const LWE::CipherText& ct2, long long* initP, long long* ACCP, long long* KeySwitchP, long long* ModSwitchP, long long * inACC1P, long long * inACC2P, long long * inACC3P, long long * inACC4P, int * numACC) {
 
+    /* Variables created for profiling purposes */
     unsigned long long t1, t2;
-    
+    long long inACC1temp = 0, inACC2temp = 0, inACC3temp = 0, inACC4temp = 0, inACC1, inACC2, inACC3, inACC4;
+    int nac = 0;
+
+
     LWE::CipherText e12;
     
     for (int i = 0; i < n; ++i){
       e12.a[i] = (2*q - (ct1.a[i] + ct2.a[i])) % q;
     }
-
-
     e12.b  =  (13 * q / 8) - (ct1.b + ct2.b) % q;
 
     ct_FFT ACC;
+
+    /*
+      Profiling InitializeACC
+    */
 
     t1 = profiler::rdtsc();
     InitializeACC(ACC, (e12.b + q/4) % q);
     t2 = profiler::rdtsc();
     *initP = t2 - t1;
 
+
     /*
       Profiling ACC
     */
-    long long inACC1temp = 0, inACC2temp = 0, inACC3temp = 0, inACC4temp = 0, inACC1, inACC2, inACC3, inACC4;
-    int nac = 0;
     
     t1 = profiler::rdtsc();
     for (int i = 0; i < n; ++i) {
@@ -412,12 +441,16 @@ void AddToACCProf(ct_FFT ACC, ct_FFT C, long long * inACC1, long long * inACC2, 
     t2 = profiler::rdtsc();
     *ACCP = t2 - t1;
 
-    *inACC1P = inACC1temp;
-    *inACC2P = inACC2temp;
-    *inACC3P = inACC3temp;
-    *inACC4P = inACC4temp;
-    *numACC = nac;
+    *inACC1P = inACC1temp;        // Pass the running time of the first loop
+    *inACC2P = inACC2temp;        // Pass the running time of the second loop
+    *inACC3P = inACC3temp;        // Pass the running time of the third loop
+    *inACC4P = inACC4temp;        // Pass the running time of the fourth loop
+    *numACC = nac;                // Pass the number of AddToACC calls
 
+
+    /*
+      Profiling KeySwitch
+    */
 
     LWE::CipherTextQN *eQN = MemberTest(t_TestMSB, ACC);
     LWE::CipherTextQ eQ;
@@ -428,6 +461,9 @@ void AddToACCProf(ct_FFT ACC, ct_FFT C, long long * inACC1, long long * inACC2, 
     *KeySwitchP = t2 - t1;
 
 
+    /*
+      Profiling ModSwitch
+    */
 
     t1 = profiler::rdtsc();
     LWE::ModSwitch(res, eQ);

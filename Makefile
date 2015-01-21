@@ -1,7 +1,7 @@
 PREFIX=$(HOME)
 CC=g++
 AR=ar
-CFLAGS= -Wall -O3
+CFLAGS= -Wall -O3 -fopenmp
 LDFLAGS= -L. -lfhew -lfftw3 
 INCLUDE=distrib.h LWE.h FHEW.h FFT.h params.h
 

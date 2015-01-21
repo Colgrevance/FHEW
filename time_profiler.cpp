@@ -11,7 +11,7 @@
 namespace profiler {
 
 	unsigned long long rdtsc() {
-		unsigned a, d; 															// Check why these variable names
+		unsigned a, d;
 
 		__asm__ volatile("rdtsc" : "=a" (a), "=d" (d));							// What!? I guess it is calling some sort of assembly thing
 
